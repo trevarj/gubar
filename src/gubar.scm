@@ -1,13 +1,16 @@
-#!/usr/bin/env -S guile -e main -s
+#!/usr/bin/env -S guile -e '((@ (gubar) main))' -s
 !#
-(use-modules (fibers)
-             (fibers channels)
-             (gubar blocks)
-             (gubar gublock)
-             (gubar swaybar-protocol)
-             (ice-9 format)
-             (ice-9 match)
-             (json))
+
+(define-module (gubar)
+  #:use-module (fibers)
+  #:use-module (fibers channels)
+  #:use-module (gubar blocks)
+  #:use-module (gubar gublock)
+  #:use-module (gubar swaybar-protocol)
+  #:use-module (ice-9 format)
+  #:use-module (ice-9 match)
+  #:use-module (json)
+  #:export (main))
 
 ;; TODO: Actually parse this from ~/.config/gubar/config.scm
 (define (parse-config)
@@ -18,7 +21,7 @@
   "Listens on the channel for updates sent from any of the block fibers. When an
 update is received, output all gublock inner swaybar-protocol blocks to stdout
 in json format."
-  (let loop ((update '()))
+  (let loop ((_ '()))
     ;; All blocks should be wrapped in an array, per protocol spec
     (format #t "~a,\n"
             (scm->json-string
@@ -53,5 +56,5 @@ in json format."
      
     (update-listener gublocks ch)))
 
-(define (main args)
+(define (main)
   (run-fibers run-gbar))

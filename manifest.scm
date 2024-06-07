@@ -3,6 +3,6 @@
              (gnu packages guile-xyz))
 
 (packages->manifest (list
-                      guile-next
+                      guile-3.0
                       guile-fibers
                       guile-json-4))
