@@ -48,6 +48,8 @@ in json format."
               gublocks)
 
     ;; TODO: Spawn stdin listener for click events
+    ;; Need to add a click-handler lambda on <gublock> and perhaps a state map
+    ;; so that the procedure lambda can update the block accordingly
      
     (update-listener gublocks ch)))
 
