@@ -16,7 +16,7 @@
                         #:recursive? #t
                         #:select? (git-predicate %source-dir)))
     (build-system guile-build-system)
-    (native-inputs (list guile-3.0))
+    (inputs (list guile-3.0))
     (propagated-inputs (list guile-fibers guile-json-4))    
     (synopsis "Swaybar generator written in Guile Scheme.")
     (description "A bar generator for sway using the swaybar-protocol, written

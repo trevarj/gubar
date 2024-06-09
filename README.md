@@ -2,22 +2,25 @@
 
 Swaybar generator, written in Guile Scheme.
 
-## Running
+## Try it using Guix shell
 
-WIP
-FIX: Understand how to get guix.scm working with
-```
-guix shell -f guix.scm
-```
-
-
-
-```
-guile -e "((@ (gubar) main))" 
+```sh
+cd gubar/
+guix shell guile -f guix.scm -- guile -e "((@ (gubar) main))" 
 ```
 
-or 
+## Installing
 
+### Guix
+
+This will install gubar and the require dependencies into your Guix profile:
+```sh
+cd gubar/
+guix package -f guix.scm
 ```
-./src/gubar.scm
+
+Then you can run using your own profile:
+
+```sh
+guile -e "((@ (gubar) main))
 ```
