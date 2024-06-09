@@ -1,8 +1,8 @@
 (define-module (gubar gublock)
   #:use-module (fibers)
-  #:use-module (fibers operations)  
+  #:use-module (fibers operations)
   #:use-module (fibers channels)
-  #:use-module (fibers timers)
+  #:use-module ((fibers timers) #:select ((sleep . fsleep)))
   #:use-module (gubar swaybar-protocol)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-9)
@@ -14,8 +14,9 @@
             gublock-interval
             gublock-procedure
             set-gublock-procedure!
-            gublock-run))
-                
+            gublock-run
+            gublock-handle-click))
+
 (define-record-type <gublock>
   (make-gublock block interval procedure click-handler)
   gublock?
@@ -28,24 +29,24 @@
   ;; A lambda that takes (click-event, block) and returns a new block
   (click-handler gublock-click-handler))
 
-(define (gublock-run gublock update-chan click-chan)
-  (let loop ()
-    (match-let* ((($ <gublock> block interval procedure click-handler) gublock)
-                 (sleep-op (sleep-operation interval))
-                 (new-block (procedure block)))
-      (set-gublock-block! gublock new-block)
-      (put-message update-chan #t)
-      (perform-operation sleep-op))
-      ;; (perform-operation
-      ;;  (choice-operation
-      ;;   sleep-op
-      ;;   (get-operation click-chan))))
-      ;; (let ((result (perform-operation
-      ;;                (choice-operation
-      ;;                 (sleep-operation interval)
-      ;;                 (get-operation click-chan)))))
-      ;;   (when (and (click-event? result)
-      ;;              (eqv? (block-name block)
-      ;;                    (click-event-name result)))
-      ;;     (click-handler result block))))
-    (loop)))
+(define (do-procedure gublock update-chan)
+  (let ((procedure (gublock-procedure gublock))
+        (block (gublock-block gublock)))
+    (when (procedure? procedure)
+      (set-gublock-block! gublock (procedure block))
+      (put-message update-chan #t))))
+
+(define (gublock-handle-click gublock event)
+  (let ((handler (gublock-click-handler gublock))
+        (block (gublock-block gublock)))
+    (unless (equal? handler #f)
+      (set-gublock-block! gublock (handler event block)))))
+
+(define (gublock-run gublock update-chan)
+  ;; First run
+  (do-procedure gublock update-chan)
+  (unless (equal? 'persistant (gublock-interval gublock))
+    (let loop ()
+      (fsleep (gublock-interval gublock))
+      (do-procedure gublock update-chan)
+      (loop))))

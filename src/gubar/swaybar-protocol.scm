@@ -1,31 +1,35 @@
 (define-module (gubar swaybar-protocol)
   #:use-module (json record)
-  #:export (make-block
+  #:export (<block>
+            make-block
             block->json
             block->scm
             scm->block
             block-name
+            block-instance
+            block-full-text
+            <header>
             make-header
             header-with-clicks
-            header-without-clicks
             header->json
             header->scm
+            <click-event>
             json->click-event
             click-event?
             click-event-name))
 
 (define-json-type <header>
+  ;; The protocol version to use. Currently, this must be 1
+  (version)
   ;; Whether to receive click event information to standard input
   (click-events "click_events")
   ;; The signal that swaybar should send to continue processing
   (cont-signal "cont_signal")
   ;; The signal that swaybar should send to stop processing
-  (stop-signal "stop_signal")
-  ;; The protocol version to use. Currently, this must be 1
-  (version))
+  (stop-signal "stop_signal"))
 
 (define header-with-clicks
-  (make-header #t *unspecified* *unspecified* 1))
+  (make-header 1 #t *unspecified* *unspecified*))
 
 (define-json-type <block>
   ;; If the text does not span the full width of the block, this specifies how
@@ -57,7 +61,7 @@
   (markup)
   ;; The minimum width to use for the block. This can either be given in pixels
   ;; or a string can be given to allow for it to be calculated based on the
-  ;; width of the string. 
+  ;; width of the string.
   (min-width "min_width")
   ;; A name for the block. This is only used to identify the block for click
   ;; events. If set, each block should have a unique name and instance pair.
@@ -80,14 +84,14 @@
   ;; The x11 button number for the click. If the button does not have an x11
   ;; button mapping, this will be 0.
   ;; (button)
+  ;; The name of the block, if set
+  (name)
   ;; The event code that corresponds to the button for the click
   (event)
   ;; The height of the block in pixels
   (height)
   ;; The instance of the block, if set
   (instance)
-  ;; The name of the block, if set
-  (name)
   ;; The x location of the click relative to the top-left of the block
   (relative-x "relative_x")
   ;; The y location of the click relative to the top-left of the block
