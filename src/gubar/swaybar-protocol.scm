@@ -4,12 +4,15 @@
             block->json
             block->scm
             scm->block
+            block-name
             make-header
             header-with-clicks
             header-without-clicks
             header->json
             header->scm
-            json->click-event))
+            json->click-event
+            click-event?
+            click-event-name))
 
 (define-json-type <header>
   ;; Whether to receive click event information to standard input
@@ -21,8 +24,6 @@
   ;; The protocol version to use. Currently, this must be 1
   (version))
 
-(define header-without-clicks
-  (make-header #f *unspecified* *unspecified* 1))
 (define header-with-clicks
   (make-header #t *unspecified* *unspecified* 1))
 

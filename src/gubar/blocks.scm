@@ -11,4 +11,6 @@
    (lambda (block)
      (scm->block
       `(("full_text" .
-         ,(strftime format (localtime (current-time)))))))))
+         ,(strftime format (localtime (current-time)))))))
+   (lambda (event block)
+     (pk (list "clicked!" event block)))))
