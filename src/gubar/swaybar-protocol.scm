@@ -8,7 +8,20 @@
             block-name
             block-instance
             block-full-text
+            block-short-text
+            block-color
             block-background
+            block-align
+            block-separator
+            block-separator-block-width
+            block-min-width
+            block-border
+            block-border-top
+            block-border-bottom
+            block-border-left
+            block-border-right
+            block-urgent
+            block-markup
             <header>
             make-header
             header-with-clicks
@@ -17,7 +30,16 @@
             <click-event>
             json->click-event
             click-event?
-            click-event-name))
+            click-event-button
+            click-event-name
+            click-event-instance
+            click-event-x
+            click-event-relative-x
+            click-event-y
+            click-event-relative-y
+            click-event-event
+            click-event-width
+            click-event-height))
 
 (define-json-type <header>
   ;; The protocol version to use. Currently, this must be 1
@@ -84,7 +106,7 @@
 (define-json-type <click-event>
   ;; The x11 button number for the click. If the button does not have an x11
   ;; button mapping, this will be 0.
-  ;; (button)
+  (button)
   ;; The name of the block, if set
   (name)
   ;; The event code that corresponds to the button for the click

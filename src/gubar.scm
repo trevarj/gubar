@@ -39,7 +39,7 @@ in json format."
 
 (define (click-listener gublocks update-chan)
   "Listens on standard input for click events reported by swaybar, then parses
-the <click-event> and sends it to the click handler channel."
+the <click-event> and finds the correct gublock to handle the event."
   (let* ((stdin (current-input-port))
          (flags (fcntl stdin F_GETFL)))
     ;; Throw away first "[\n" of infinite array
@@ -52,8 +52,11 @@ the <click-event> and sends it to the click handler channel."
       ;; Trim away ','
       (let* ((event (json->click-event (string-trim (get-line stdin) #\,))))
         (let ((gu (find (lambda (g)
-                          (equal? (block-name (gublock-block g))
-                                  (click-event-name event)))
+                          (let ((block (gublock-block g)))
+                            (and (equal? (block-instance block)
+                                         (click-event-instance event))
+                                 (equal? (block-name block)
+                                         (click-event-name event)))))
                         gublocks)))
           (unless (eq? #f gu)
             (gublock-handle-click gu event update-chan))))

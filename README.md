@@ -42,3 +42,10 @@ bar {
     status_command ~/.config/sway/gubar.sh
     ...
 ```
+
+## TODO
+- [ ] Make configuration more ergonomic with some kind of syntax for defining
+      blocks, instead of having to use assoc lists.
+- [ ] Try to use channels to send click updates to a block instead of finding
+      the block and updating manually (maybe)
+- [ ] Better error handling or assertions
