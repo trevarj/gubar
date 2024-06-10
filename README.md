@@ -1,6 +1,6 @@
 # gubar
 
-Swaybar generator, written in Guile Scheme.
+A hackable Swaybar generator, written and configured with Guile Scheme.
 
 ## Try it using Guix shell
 
@@ -10,6 +10,11 @@ guix shell guile -f guix.scm -- guile -e "((@ (gubar) main))"
 ```
 
 ## Installing
+
+### Dependencies
+- Guile 3
+- [guile-fibers](https://github.com/wingo/fibers/)
+- [guile-json](https://github.com/aconchillo/guile-json)
 
 ### Guix
 
