@@ -18,7 +18,7 @@
 ;; TODO: Actually parse this from ~/.config/gubar/config.scm
 (define (parse-config)
   (list (date-time #:interval 1)
-        (simple-label "unclicked")))
+        (simple-label "click me!")))
 
 (define (update-listener gublocks ch)
   "Listens on the channel for updates sent from any of the block fibers. When an
@@ -37,26 +37,26 @@ in json format."
       (flush-all-ports))
     (loop)))
 
-(define (click-listener gublocks)
+(define (click-listener gublocks update-chan)
   "Listens on standard input for click events reported by swaybar, then parses
 the <click-event> and sends it to the click handler channel."
   (let* ((stdin (current-input-port))
          (flags (fcntl stdin F_GETFL)))
-    ;; Read first '[' of infinite array
+    ;; Throw away first "[\n" of infinite array
     (get-line stdin)
 
     ;; Non-blocking I/O for stdin so we can do other stuff when waiting for clicks
     (fcntl stdin F_SETFL (logior O_NONBLOCK flags))
 
     (let loop ()
-      ;; TODO: Truncate ',' before json string
-      (let* ((event (json->click-event (get-line stdin))))
-        (let ((found (find (lambda (g)
-                             (equal? (block-name (gublock-block g))
-                                     (click-event-name event)))
-                           gublocks)))
-          (unless (eq? #f found)
-            (gublock-handle-click found event))))
+      ;; Trim away ','
+      (let* ((event (json->click-event (string-trim (get-line stdin) #\,))))
+        (let ((gu (find (lambda (g)
+                          (equal? (block-name (gublock-block g))
+                                  (click-event-name event)))
+                        gublocks)))
+          (unless (eq? #f gu)
+            (gublock-handle-click gu event update-chan))))
       (loop))))
 
 (define (run-gubar)
@@ -79,7 +79,7 @@ the <click-event> and sends it to the click handler channel."
 
     ;; Fiber for click handling
     (spawn-fiber
-     (lambda () (click-listener gublocks))
+     (lambda () (click-listener gublocks update-chan))
      #:parallel? #t)
 
     ;; Start listening for updates from gublocks

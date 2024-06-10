@@ -10,9 +10,9 @@
             make-gublock
             gublock?
             gublock-block
-            set-gublock-block!
             gublock-interval
             gublock-procedure
+            set-gublock-block!
             set-gublock-procedure!
             gublock-run
             gublock-handle-click))
@@ -36,11 +36,12 @@
       (set-gublock-block! gublock (procedure block))
       (put-message update-chan #t))))
 
-(define (gublock-handle-click gublock event)
+(define (gublock-handle-click gublock event update-chan)
   (let ((handler (gublock-click-handler gublock))
         (block (gublock-block gublock)))
     (unless (equal? handler #f)
-      (set-gublock-block! gublock (handler event block)))))
+      (set-gublock-block! gublock (handler event block))
+      (put-message update-chan #t))))
 
 (define (gublock-run gublock update-chan)
   ;; First run

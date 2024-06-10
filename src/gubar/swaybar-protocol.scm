@@ -8,6 +8,7 @@
             block-name
             block-instance
             block-full-text
+            block-background
             <header>
             make-header
             header-with-clicks

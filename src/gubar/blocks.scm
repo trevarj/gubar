@@ -1,6 +1,7 @@
 (define-module (gubar blocks)
   #:use-module (gubar gublock)
   #:use-module (gubar swaybar-protocol)
+  #:use-module (ice-9 match)
   #:export (date-time
             simple-label))
 
@@ -16,14 +17,15 @@
    #f))
 
 (define (simple-label text)
-  (make-gublock
-   (scm->block `(("full_text" . ,text)
-                 ("name" . "label")
-                 ("instance" . "make me random")))
-   'persistant
-   #f
-   (lambda (event block)
-     ;; this is dumb
-     (scm->block `(("full_text" . "clicked")
-                   ("name" . "label")
-                   ("instance" . "make me random"))))))
+  (let ((initial-block-scm
+         `(("full_text" . ,text)
+           ("name" . "label")
+           ("instance" . "make me random"))))
+    (make-gublock
+     (scm->block initial-block-scm) 'persistant #f
+     (lambda (event block)
+       (scm->block
+        (assoc-set! initial-block-scm "background"
+                    (match (block-background block)
+                      ("#FF0000" "")
+                      (_ "#FF0000"))))))))
