@@ -38,7 +38,7 @@
           (fold
            (lambda (pair alist) (assoc-set! alist (car pair) (cdr pair)))
            block-alist `(("full_text" . ,(str-format #f format label level))
-                         ("urgent" . ,(<= level 20))))))))))
+                         ("urgent" . ,(<= level 10))))))))))
 
 (define* (date-time #:key (format "%c") (interval 60))
   "Creates a new date-time gublock."
