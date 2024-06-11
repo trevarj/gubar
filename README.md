@@ -54,3 +54,5 @@ bar {
 - [ ] Try to use channels to send click updates to a block instead of finding
       the block and updating manually (maybe)
 - [ ] Better error handling or assertions
+- [ ] Fix guix.scm to install with gnu-build-system so that we can install
+      the script as a program with default configs, docs, etc.

@@ -18,6 +18,7 @@
 ;; TODO: Actually parse this from ~/.config/gubar/config.scm
 (define (parse-config)
   (list (date-time #:interval 1)
+        (battery #:nerd-icons #t)
         (simple-label "click me!")))
 
 (define (update-listener gublocks ch)

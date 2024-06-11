@@ -46,7 +46,7 @@
 (define (gublock-run gublock update-chan)
   ;; First run
   (do-procedure gublock update-chan)
-  (unless (equal? 'persistant (gublock-interval gublock))
+  (unless (equal? 'persistent (gublock-interval gublock))
     (let loop ()
       (fsleep (gublock-interval gublock))
       (do-procedure gublock update-chan)

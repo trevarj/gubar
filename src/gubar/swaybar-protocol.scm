@@ -2,6 +2,7 @@
   #:use-module (json record)
   #:export (<block>
             make-block
+            default-block
             block->json
             block->scm
             scm->block
@@ -102,6 +103,9 @@
   ;; the colors set in the sway config for urgent workspace buttons. See
   ;; sway-bar(5) for more information on bar color configuration.
   (urgent))
+
+(define default-block
+  (scm->block '(("full_text" . *unspecified*))))
 
 (define-json-type <click-event>
   ;; The x11 button number for the click. If the button does not have an x11
