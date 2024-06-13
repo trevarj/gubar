@@ -20,19 +20,16 @@
 (define simple-config
   (list (date-time #:interval 1)))
 
-(define (eval-config file)
-  (with-exception-handler
-      (lambda (err)
-        (list (simple-label
-               (format #f (exception-message err) (exception-irritants err))
-               #:color "#FF0000")))
-      (lambda () (load file))
-      #:unwind? #t))
-
 (define (load-config)
   (let ((config-file (string-append (getenv "HOME") "/.config/gubar/config.scm")))
     (if (file-exists? config-file)
-        (eval-config config-file)
+        (with-exception-handler
+            (lambda (err)
+              (list (simple-label
+                     (format #f (exception-message err) (exception-irritants err))
+                     #:color "#FF0000")))
+          (lambda () (load config-file))
+         #:unwind? #t)
         simple-config)))
 
 (define (update-listener gublocks ch)
