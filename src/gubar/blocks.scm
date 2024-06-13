@@ -12,7 +12,7 @@
 (define* (gublock #:key
                   (block '())
                   (interval 'persistent)
-                  (procedure #f)
+                  (procedure (lambda (block) block))
                   (click-handler #f))
   (make-gublock
    (scm->block block) interval procedure click-handler))
@@ -40,7 +40,7 @@
            block-alist `(("full_text" . ,(str-format #f format label level))
                          ("urgent" . ,(<= level 10))))))))))
 
-(define* (date-time #:key (format "%c") (interval 60))
+(define* (date-time #:key (format "%c") (interval 1))
   "Creates a new date-time gublock."
   (make-gublock
    (scm->block '(("full_text" . *unspecified*)))
@@ -51,17 +51,18 @@
          ,(strftime format (localtime (current-time)))))))
    #f))
 
-(define (simple-label text)
+(define* (simple-label text #:key color)
   "Creates a label that turns red on click."
   (let ((initial-block-scm
          `(("full_text" . ,text)
            ("name" . "label")
-           ("instance" . "make me random"))))
-    (make-gublock
-     (scm->block initial-block-scm) 'persistent #f
+           ("instance" . "make me random")
+           ("color" . ,color))))
+    (gublock
+     #:block initial-block-scm
+     #:click-handler
      (lambda (event block)
        (scm->block
-        (assoc-set! initial-block-scm "background"
-                    (match (block-background block)
-                      ("#FF0000" "")
-                      (_ "#FF0000"))))))))
+        (assoc-set! initial-block-scm
+                    "urgent"
+                    (not (block-urgent block))))))))

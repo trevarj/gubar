@@ -2,6 +2,7 @@
 !#
 
 (define-module (gubar)
+  #:declarative? #f
   #:use-module (fibers)
   #:use-module (fibers channels)
   #:use-module (fibers io-wakeup)
@@ -9,17 +10,30 @@
   #:use-module (gubar gublock)
   #:use-module (gubar swaybar-protocol)
   #:use-module (ice-9 format)
+  #:use-module (ice-9 exceptions)
   #:use-module (ice-9 match)
   #:use-module (ice-9 textual-ports)
   #:use-module (json)
   #:use-module (srfi srfi-1)
   #:export (main))
 
-;; TODO: Actually parse this from ~/.config/gubar/config.scm
-(define (parse-config)
-  (list (date-time #:interval 1)
-        (battery #:nerd-icons #t)
-        (simple-label "click me!")))
+(define simple-config
+  (list (date-time #:interval 1)))
+
+(define (eval-config file)
+  (with-exception-handler
+      (lambda (err)
+        (list (simple-label
+               (format #f (exception-message err) (exception-irritants err))
+               #:color "#FF0000")))
+      (lambda () (load file))
+      #:unwind? #t))
+
+(define (load-config)
+  (let ((config-file (string-append (getenv "HOME") "/.config/gubar/config.scm")))
+    (if (file-exists? config-file)
+        (eval-config config-file)
+        simple-config)))
 
 (define (update-listener gublocks ch)
   "Listens on the channel for updates sent from any of the block fibers. When an
@@ -65,7 +79,7 @@ the <click-event> and finds the correct gublock to handle the event."
 
 (define (run-gubar)
   (let ((update-chan (make-channel))
-        (gublocks (parse-config)))
+        (gublocks (load-config)))
 
     ;; The swaybar-protocol requires the header to be written to stdout followed by
     ;; a new line and then the opening bracket '[' of an infinite json array.
