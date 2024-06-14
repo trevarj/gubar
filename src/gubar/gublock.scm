@@ -18,7 +18,7 @@
             gublock-handle-click))
 
 (define-record-type <gublock>
-  (make-gublock block interval procedure click-handler)
+  (make-gublock block interval procedure click-handler signal)
   gublock?
   ;; Swaybar-protocol "body" object
   (block gublock-block set-gublock-block!)
@@ -27,7 +27,9 @@
   ;; A lambda that takes the gublock's block and returns a new block
   (procedure gublock-procedure set-gublock-procedure!)
   ;; A lambda that takes (click-event, block) and returns a new block
-  (click-handler gublock-click-handler))
+  (click-handler gublock-click-handler)
+  ;; The number of SIGRTMIN+N to register on and perform an update upon
+  (signal gublock-signal))
 
 (define (do-procedure gublock update-chan)
   (let ((procedure (gublock-procedure gublock))
@@ -44,6 +46,11 @@
       (put-message update-chan #t))))
 
 (define (gublock-run gublock update-chan)
+  ;; Register on signal
+  (let ((signal (gublock-signal gublock)))
+    (when signal
+      (sigaction (+ signal SIGRTMIN)
+        (lambda (_) (do-procedure gublock update-chan)))))
   ;; First run
   (do-procedure gublock update-chan)
   (unless (equal? 'persistent (gublock-interval gublock))

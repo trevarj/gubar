@@ -5,7 +5,8 @@
   #:use-module ((ice-9 format) #:select ((format . str-format)))
   #:use-module (ice-9 textual-ports)
   #:use-module (srfi srfi-1)
-  #:export (date-time
+  #:export (gublock
+            date-time
             battery
             simple-label))
 
@@ -13,9 +14,10 @@
                   (block '())
                   (interval 'persistent)
                   (procedure (lambda (block) block))
-                  (click-handler #f))
+                  (click-handler #f)
+                  (signal #f))
   (make-gublock
-   (scm->block block) interval procedure click-handler))
+   (scm->block block) interval procedure click-handler signal))
 
 (define* (battery #:key (format "~a ~a%") (nerd-icons #f))
   (let ((bat "/sys/class/power_supply/BAT0/capacity")
@@ -42,14 +44,24 @@
 
 (define* (date-time #:key (format "%c") (interval 1))
   "Creates a new date-time gublock."
-  (make-gublock
-   (scm->block '(("full_text" . *unspecified*)))
-   interval
+  (gublock
+   #:interval interval
+   #:procedure
    (lambda (block)
      (scm->block
       `(("full_text" .
-         ,(strftime format (localtime (current-time)))))))
-   #f))
+         ,(strftime format (localtime (current-time)))))))))
+
+;; (define (volume-pulseaudio)
+;;   (gublock
+;;    #:interval 2
+;;    #:procedure
+;;    (lambda (block)
+;;      (let* ((vol-port (open-input-pipe
+;;                        "pactl list sinks | tr ' ' '\n' | grep -m1 '%'"))
+;;             (vol (get-line vol-port)))
+;;        (close-pipe vol-port)
+;;        (scm->block (assoc-set! (block->scm block) "full_text" vol))))))
 
 (define* (simple-label text #:key color)
   "Creates a label that turns red on click."
