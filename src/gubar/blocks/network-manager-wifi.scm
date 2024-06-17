@@ -39,5 +39,5 @@
                      (#f "󰤭")
                      ((ssid signal)
                       (if ssid
-                          (format #f "~a  (~a)" signal ssid)
+                          (format #f "~a (~a)" signal ssid)
                           signal))))))))
