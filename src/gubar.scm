@@ -1,4 +1,4 @@
-#!/usr/bin/env -S guile -e '((@ (gubar) main))' -s
+#!/usr/bin/env -S guile -e '((@ (gubar) main))'
 !#
 
 (define-module (gubar)
@@ -6,7 +6,8 @@
   #:use-module (fibers)
   #:use-module (fibers channels)
   #:use-module (fibers io-wakeup)
-  #:use-module (gubar blocks)
+  #:use-module (gubar blocks date-time)
+  #:use-module (gubar blocks label)
   #:use-module (gubar gublock)
   #:use-module (gubar swaybar-protocol)
   #:use-module (ice-9 format)
@@ -25,7 +26,7 @@
     (if (file-exists? config-file)
         (with-exception-handler
             (lambda (err)
-              (list (simple-label
+              (list (label
                      (format #f (exception-message err) (exception-irritants err))
                      #:color "#FF0000")))
           (lambda () (load config-file))

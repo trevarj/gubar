@@ -8,6 +8,7 @@
   #:use-module (srfi srfi-9)
   #:export (<gublock>
             make-gublock
+            gublock
             gublock?
             gublock-block
             gublock-interval
@@ -30,6 +31,17 @@
   (click-handler gublock-click-handler)
   ;; The number of SIGRTMIN+N to register on and perform an update upon
   (signal gublock-signal))
+
+(define* (gublock #:key
+                  (block '())
+                  (interval 'persistent)
+                  (procedure (lambda (block) block))
+                  (click-handler #f)
+                  (signal #f))
+  "Helper to define a custom gublock. The initial block can be defined using an
+assoc list."
+  (make-gublock
+   (scm->block block) interval procedure click-handler signal))
 
 (define (do-procedure gublock update-chan)
   (let ((procedure (gublock-procedure gublock))
