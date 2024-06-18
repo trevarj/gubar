@@ -38,7 +38,7 @@
        (block->scm block)
        "full_text" (match (get-wifi-status)
                      (#f "󰤭")
-                     ((ssid signal)
+                     ((_ssid signal)
                       (if ssid
-                          (format #f "~a (~a)" signal ssid)
+                          (format #f "~a (~a)" signal _ssid)
                           signal))))))))
