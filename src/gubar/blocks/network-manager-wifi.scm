@@ -18,7 +18,8 @@
   (list-ref icons (truncate-quotient signal 26)))
 
 (define (get-wifi-status)
-  (let ((input (open-input-pipe "nmcli -t -f SSID,IN-USE,SIGNAL device wifi")))
+  (let ((input (open-input-pipe "nmcli -t -f SSID,IN-USE,SIGNAL device wifi list
+--rescan auto")))
     (let has-wifi? ((line (get-line input)))
       (match (parse-line line)
         (() (close-pipe input) #f)
@@ -29,7 +30,7 @@
           #:key
           (ssid #f))
   (gublock
-   #:interval 120
+   #:interval 10
    #:procedure
    (lambda (block)
      (scm->block
