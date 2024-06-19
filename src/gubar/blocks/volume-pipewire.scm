@@ -40,7 +40,10 @@
     (let* ((volume (string-trim-right (volume-channel-value-percent
                                        (volume-front-left (sink-volume sink)))
                                       #\%))
-           (icon (if sink-mute "󰖁" (volume->icon volume))))
+           (icon (if (sink-mute sink)
+                     "󰖁"
+                     (volume->icon
+                      (string->number volume)))))
       (format #f "~a ~a" icon volume))))
 
 (define* (volume-pipewire #:key (signal 2))
