@@ -48,6 +48,35 @@ bar {
     ...
 ```
 
+## Configuration
+Gubar will look for a config file in `~/.config/gubar/config.scm` before falling
+back to the default config, which is just the system time.
+
+The `config.scm` file must return a list of gublocks in the order in which you
+want them displayed, from left to right. You may use the bundled blocks in
+(`blocks/`)[./src/gubar/blocks/] or create your own using the helper procedure
+`gublocks` that exists in the `gubar gublock` module.
+
+### `gublock`
+*Subject to change!!!*
+
+```scheme
+(gublock 
+    #:block [block] 
+    #:interval [interval]
+    #:procedure [procedure]
+    #:click-handler [click-handler]
+    #:signal [signal])
+```
+
+| Key | Description | Example |
+------------------------------
+| block | Initial block represented as an assoc list. | `'(("full_text" . "foo"))` |
+| interval | Time in seconds in which this block updates | **seconds** or `'persistent |
+| procedure | The main procedure that will be run after `interval`. Receives a <block> and returns a `<block>` record. | `(lambda (block) block)`|
+| click-handler | The procedure that is run when this block is clicked. The block must have its name field set. | `(lambda (event block) (block))`|
+| signal | SIGRTIMIN offset that this block will be listening on and refresh on | `2`, can be triggered by sending a SIGRTMIN+signal to the guile process running gubar -- `pkill -SIGRTMIN+signal -f -n gubar.scm` |
+
 ## TODO
 - [ ] Make configuration more ergonomic with some kind of syntax for defining
       blocks, instead of having to use assoc lists.
