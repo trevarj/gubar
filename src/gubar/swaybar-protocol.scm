@@ -129,3 +129,30 @@
   (x)
   ;; The y location that the click occurred at
   (y))
+
+(define (is-bracket? char)
+  (or (eqv? char #\<)
+      (eqv? char #\>)))
+
+(define (setter-symbol record-type field)
+  "returns a symbol for a fields setter for given record-type"
+  (string->symbol
+   (format #f "set-~a-~a!"
+     (string-trim-both
+      (symbol->string (record-type-name record-type)) is-bracket?)
+     field)))
+
+(define-syntax generate-setters
+  (syntax-rules ()
+    ((_ record-type)
+     (for-each
+      (lambda (field)
+        (eval `(define-public
+                 ,(setter-symbol record-type field)
+                 (record-modifier ,record-type ',field))
+              (current-module)))
+      (record-type-fields record-type)))))
+
+(generate-setters <header>)
+(generate-setters <block>)
+(generate-setters <click-event>)
