@@ -13,8 +13,6 @@
     (gublock
      #:block initial-block-scm
      #:click-handler
-     (lambda (event block)
-       (scm->block
-        (assoc-set! initial-block-scm
-                    "urgent"
-                    (not (block-urgent block))))))))
+     (lambda (_ block)
+       (set-block-urgent! block (not (block-urgent block)))
+       block))))

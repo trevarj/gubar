@@ -52,7 +52,7 @@
    #:signal signal
    #:procedure
    (lambda (block)
-     (scm->block
-      (assoc-set! (block->scm block)
-                  "full_text"
-                  (display-sink (get-default-sink)))))))
+     (set-block-full-text!
+      block
+      (display-sink (get-default-sink)))
+     block)))

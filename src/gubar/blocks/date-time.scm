@@ -10,6 +10,7 @@
    #:interval interval
    #:procedure
    (lambda (block)
-     (scm->block
-      `(("full_text" .
-         ,(strftime format (localtime (current-time)))))))))
+     (set-block-full-text!
+      block
+      (strftime format (localtime (current-time))))
+     block)))

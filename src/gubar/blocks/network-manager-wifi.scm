@@ -34,12 +34,12 @@
    #:interval 10
    #:procedure
    (lambda (block)
-     (scm->block
-      (assoc-set!
-       (block->scm block)
-       "full_text" (match (get-wifi-status)
-                     (#f "󰤭")
-                     ((_ssid signal)
-                      (if ssid
-                          (format #f "~a (~a)" signal _ssid)
-                          signal))))))))
+     (set-block-full-text!
+      block
+      (match (get-wifi-status)
+        (#f "󰤭")
+        ((_ssid signal)
+         (if ssid
+             (format #f "~a (~a)" signal _ssid)
+             signal))))
+     block)))

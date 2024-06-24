@@ -23,8 +23,6 @@
                 (nerd-icons (list-ref icons (truncate-quotient level 10)))
                 (else "BAT:")))
               (block-alist (block->scm block)))
-         (scm->block
-          (fold
-           (lambda (pair alist) (assoc-set! alist (car pair) (cdr pair)))
-           block-alist `(("full_text" . ,(fmt:format #f format label level))
-                         ("urgent" . ,(<= level 10))))))))))
+         (set-block-full-text! block (fmt:format #f format label level))
+         (set-block-urgent! block (<= level 10))
+         block)))))
