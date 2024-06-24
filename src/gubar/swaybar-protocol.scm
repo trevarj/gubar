@@ -1,6 +1,7 @@
 (define-module (gubar swaybar-protocol)
   #:use-module (json record)
   #:export (<block>
+            block
             make-block
             default-block
             block->json
@@ -24,11 +25,13 @@
             block-urgent
             block-markup
             <header>
+            header
             make-header
             header-with-clicks
             header->json
             header->scm
             <click-event>
+            click-event
             json->click-event
             click-event?
             click-event-button
@@ -104,7 +107,7 @@
   ;; sway-bar(5) for more information on bar color configuration.
   (urgent))
 
-(define default-block
+(define (default-block)
   (scm->block '(("full_text" . *unspecified*))))
 
 (define-json-type <click-event>
@@ -134,12 +137,16 @@
   (or (eqv? char #\<)
       (eqv? char #\>)))
 
+(define (record-type-name-trimmed record-type)
+  (string->symbol
+   (string-trim-both
+       (symbol->string (record-type-name record-type)) is-bracket?)))
+
 (define (setter-symbol record-type field)
   "returns a symbol for a fields setter for given record-type"
   (string->symbol
    (format #f "set-~a-~a!"
-     (string-trim-both
-      (symbol->string (record-type-name record-type)) is-bracket?)
+     (record-type-name-trimmed record-type)
      field)))
 
 (define-syntax generate-setters
@@ -153,6 +160,24 @@
               (current-module)))
       (record-type-fields record-type)))))
 
+(define-syntax generate-make-with-keywords
+  (syntax-rules ()
+    ((_ record-type)
+     (let* ((keys (record-type-fields record-type))
+            (key-args (map
+                       (lambda (field)
+                         `(,field *unspecified*))
+                       keys))
+            (rtn (record-type-name-trimmed record-type)))
+          (eval `(define*
+                   (,rtn
+                    #:key ,@key-args)
+                   (,(symbol-append 'make- rtn) ,@keys))
+                (current-module))))))
+
 (generate-setters <header>)
 (generate-setters <block>)
 (generate-setters <click-event>)
+(generate-make-with-keywords <header>)
+(generate-make-with-keywords <block>)
+(generate-make-with-keywords <click-event>)
