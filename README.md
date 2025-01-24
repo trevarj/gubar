@@ -77,6 +77,66 @@ want them displayed, from left to right. You may use the bundled blocks in
 | click-handler | The procedure that is run when this block is clicked. The block must have its name field set. | `(lambda (event block) (block))`|
 | signal | SIGRTIMIN offset that this block will be listening on and refresh on. Can be triggered by sending a SIGRTMIN+signal to the guile process running gubar -- `pkill -SIGRTMIN+signal -f -n gubar.scm`  | `2` |
 
+### Built-in Blocks
+
+| Block                | Declaration                                         | Info                                                                                                                     |
+|----------------------|-----------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------|
+| battery              | `(battery #:key (format "~a ~a%") (nerd-icons #f))` | Uses `/sys/class/power_supply/AC/online` and `/sys/class/power_supply/BAT0/capacity`                                     |
+| date-time            | `(date-time #:key (format "%c") (interval 1))`      | Defaults: format `%c`, info `1`                                                                                          |
+| label                | `(label text #:key color)`                          | Color should be an RGB string "#RRGGBB"                                                                                  |
+| network-manager-wifi | `(network-manager-wifi #:key (ssid #f))`            | Uses `nmcli -t -f SSID,IN-USE,SIGNAL device wifi list --rescan auto` to gather info                                      |
+| volume               | `(volume-pipewire #:key (signal 2))`                | Uses `pactl -f json list sinks` and `pactl get-default-sink` to gather info                                              |
+| xkb-layout           | `(xkb-layout #:key (signal 3) (alias-pairs '()))`   | Uses `swaymsg -rt get_inputs` to gather info. `alias-pairs` are for mapping the layout index to an alias to be displayed |
+
+### Example Config
+
+```scheme
+(use-modules (gubar gublock)
+             (gubar blocks date-time)
+             (gubar blocks battery)
+             (gubar blocks label)
+             (gubar blocks volume-pipewire)
+             (gubar blocks network-manager-wifi)
+             (gubar blocks xkb-layout)
+             (gubar swaybar-protocol))
+
+(list
+ (date-time #:interval 60 #:format "%a %b %d %Y %-I:%M %p")
+ (network-manager-wifi)
+ (volume-pipewire)
+ (xkb-layout #:alias-pairs '((0 . "lang1") (1 . "lang2")))
+ (battery #:nerd-icons #t)
+ (label "some text"))
+```
+ 
+#### Corresponding swayconfig
+For the modules that require signals:
+ 
+```
+# Volume control
+bindsym --locked  XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle
+bindsym --release XF86AudioMute exec pkill -SIGRTMIN+2 -f -n gubar.scm
+bindsym --locked  XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%
+bindsym --release XF86AudioLowerVolume exec pkill -SIGRTMIN+2 -f -n gubar.scm
+bindsym --locked  XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%
+bindsym --release XF86AudioRaiseVolume exec pkill -SIGRTMIN+2 -f -n gubar.scm
+
+# Switch layout
+bindsym --release $mod+Control_R exec swaymsg input type:keyboard \
+                                      xkb_switch_layout next && \
+                                      pkill -SIGRTMIN+3 -f -n gubar.scm
+```
+
+Bar declaration:
+
+```
+bar {
+    ...
+    status_command "guix shell guile -f /path/to/gubar/guix.scm -- /path/to/gubar/src/gubar.scm"
+    ...
+}
+```
+ 
 ## TODO
 - [ ] Make configuration more ergonomic with some kind of syntax for defining
       blocks, instead of having to use assoc lists.
