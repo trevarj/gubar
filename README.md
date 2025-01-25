@@ -58,7 +58,11 @@ want them displayed, from left to right. You may use the bundled blocks in
 `gublocks` that exists in the `gubar gublock` module.
 
 ### `gublock`
-**Subject to change!!!**
+A `gublock` is the fundamental building block of `Gubar`.
+
+| :warning: **Subject to Change** |
+|---------------------------------|
+| The `gublock` interface is unstable and may change at any point |
 
 ```scheme
 (gublock 
@@ -68,6 +72,7 @@ want them displayed, from left to right. You may use the bundled blocks in
     #:click-handler [click-handler]
     #:signal [signal])
 ```
+The effects of the keys are as follows:
 
 | Key | Description | Example 
 |-----|-------------|--------
