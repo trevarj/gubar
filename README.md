@@ -73,7 +73,7 @@ want them displayed, from left to right. You may use the bundled blocks in
 |-----|-------------|--------
 | block | Initial block represented as an assoc list. | `'(("full_text" . "foo"))` |
 | interval | Time in seconds in which this block updates | seconds or `'persistent` |
-| procedure | The main procedure that will be run after `interval`. Receives a <block> and returns a `<block>` record. | `(lambda (block) block)`|
+| procedure | The main procedure that will be run after `interval`. Receives a `<block>` and returns a `<block>` record. | `(lambda (block) block)`|
 | click-handler | The procedure that is run when this block is clicked. The block must have its name field set. | `(lambda (event block) (block))`|
 | signal | SIGRTIMIN offset that this block will be listening on and refresh on. Can be triggered by sending a SIGRTMIN+signal to the guile process running gubar -- `pkill -SIGRTMIN+signal -f -n gubar.scm`  | `2` |
 
