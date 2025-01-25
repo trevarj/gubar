@@ -77,6 +77,34 @@ want them displayed, from left to right. You may use the bundled blocks in
 | click-handler | The procedure that is run when this block is clicked. The block must have its name field set. | `(lambda (event block) (block))`|
 | signal | SIGRTIMIN offset that this block will be listening on and refresh on. Can be triggered by sending a SIGRTMIN+signal to the guile process running gubar -- `pkill -SIGRTMIN+signal -f -n gubar.scm`  | `2` |
 
+#### Examples
+
+All keys are optional, so the most basic block with no text at all is
+`(gublock)`. Here's a block that the number of seconds it has been active:
+
+```scheme
+(gublock
+ #:interval 1 ; update each second
+ #:procedure
+ (let ((counter 0))
+   (lambda (block)
+     (set! counter (+ counter 1))
+     (set-block-full-text! block (number->string counter))
+     block)))
+```
+
+And here's a block that shows a random number every time you click it:
+
+```scheme
+(gublock
+ #:block (("full_text" . "Click me!")
+          ("name" . "randomizer"))
+ #:click-handler
+ (lambda (_ block)
+   (set-block-full-text! block (number->string (random 1000000)))
+   block))
+```
+
 ### Built-in Blocks
 
 | Block                | Declaration                                         | Info                                                                                                                     |
