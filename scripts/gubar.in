@@ -1,0 +1,5 @@
+#!@GUILE@ \
+--no-auto-compile -e main -s
+!#
+
+(use-modules (gubar main))

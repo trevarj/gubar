@@ -1,7 +1,4 @@
-#!/usr/bin/env -S guile -e '((@ (gubar) main))'
-!#
-
-(define-module (gubar)
+(define-module (gubar main)
   #:declarative? #f
   #:use-module (fibers)
   #:use-module (fibers channels)
@@ -101,5 +98,5 @@ the <click-event> and finds the correct gublock to handle the event."
     ;; Start listening for updates from gublocks
     (update-listener gublocks update-chan)))
 
-(define (main)
+(define (main args)
   (run-fibers run-gubar))

@@ -6,7 +6,9 @@ A hackable Swaybar generator, written and configured with Guile Scheme.
 
 ```sh
 cd gubar/
-guix shell guile -f guix.scm -- guile -e "((@ (gubar) main))" 
+guix shell
+autoreconf -vif && ./configure
+./pre-inst-env gubar
 ```
 
 ## Installing
@@ -18,33 +20,18 @@ guix shell guile -f guix.scm -- guile -e "((@ (gubar) main))"
 
 ### Guix
 
-This will install gubar and the require dependencies into your Guix profile:
+This will install gubar and put it in your profile PATH:
 ```sh
 cd gubar/
 guix package -f guix.scm
 ```
 
-Then you can run using your own profile:
-
-```sh
-guile -e "((@ (gubar) main))
-```
-
 ## Integrating with swaybar
-Create a script called `gubar.sh` in `~/.config/sway/`:
-
-```sh
-#!/bin/sh
-
-# If you installed just take the text after "--"
-guix shell guile -f ~/Workspace/gubar/guix.scm -- guile -c "((@ (gubar) main))"
-```
-
-Then, in your `~/.config/sway/config`, execute the script:
+Once gubar is installed, add the following to your Sway config:
 ```
 bar {
     ...
-    status_command ~/.config/sway/gubar.sh
+    status_command gubar
     ...
 ```
 
@@ -169,7 +156,25 @@ bar {
     ...
 }
 ```
- 
+
+## Contributing
+
+This project uses [Guile Hall](https://gitlab.com/a-sassmannshausen/guile-hall)
+to generate the files necessary for the GNU Build System.
+If you are contributing new source files, e.g., new gublock definitions,
+the files must be regenerated as follows.
+
+```
+# Add new file
+touch gubar/blocks/my-new-block.scm
+
+# Register new file in hall.scm
+hall add gubar/blocks/my-new-block.scm
+
+# Rebuild GNU Build System files
+hall build -xf
+```
+
 ## TODO
 - [ ] Make configuration more ergonomic with some kind of syntax for defining
       blocks, instead of having to use assoc lists.
