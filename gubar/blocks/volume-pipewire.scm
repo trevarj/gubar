@@ -46,9 +46,9 @@
                       (string->number volume)))))
       (format #f "~a ~a" icon volume))))
 
-(define* (volume-pipewire #:key (signal 2))
+(define* (volume-pipewire #:key (signal 2) (interval #f))
   (gublock
-   #:interval 'persistent
+   #:interval (or interval 'persistent)
    #:signal signal
    #:procedure
    (lambda (block)
