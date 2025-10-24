@@ -30,7 +30,7 @@ SOURCES = gubar/blocks/xkb-layout.scm \
           gubar/blocks/label.scm \
           gubar/blocks/date-time.scm \
           gubar/blocks/battery.scm \
-	  gubar/blocks/brightness.scm \
+          gubar/blocks/brightness.scm \
           gubar/hconfig.scm \
           gubar/main.scm \
           gubar/swaybar-protocol.scm \

@@ -29,10 +29,11 @@
     (close-pipe max-input)
     (list percentage (brightness->icon percentage))))
 
-(define* (brightness #:key (format "~a ~a%") (nerd-icons #f) (interval 0.1))
+(define* (brightness #:key (format "~a ~a%") (nerd-icons #f) (signal 4))
   (gublock
    #:block '(("name" . "brightness") ("full_text" . "N/A"))
-   #:interval interval
+   #:interval 'persistent
+   #:signal signal
    #:procedure
    (lambda (block)
      (let* ((status (get-brightness-status))
