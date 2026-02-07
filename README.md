@@ -162,15 +162,10 @@ bar {
 This project uses [Guile Hall](https://gitlab.com/a-sassmannshausen/guile-hall)
 to generate the files necessary for the GNU Build System.
 If you are contributing new source files, e.g., new gublock definitions,
-the files must be regenerated as follows.
+the files must be added to `hall.scm` in the `(files (libraries ...` section
+and then regenerated as follows.
 
 ```
-# Add new file
-touch gubar/blocks/my-new-block.scm
-
-# Register new file in hall.scm
-hall add gubar/blocks/my-new-block.scm
-
 # Rebuild GNU Build System files
 hall build -xf
 ```

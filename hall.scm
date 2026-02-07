@@ -44,14 +44,7 @@
             (text-file "ChangeLog")))
          (infrastructure
            ((scheme-file "guix")
-            (text-file ".gitignore")
             (scheme-file "hall")
-            (directory
-              "build-aux"
-              ((tex-file "texinfo")
-               (text-file "missing")
-               (text-file "install-sh")
-               (scheme-file "test-driver")))
             (autoconf-file "configure")
             (automake-file "Makefile")
             (in-file "pre-inst-env")))))

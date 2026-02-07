@@ -60,15 +60,11 @@ EXTRA_DIST = COPYING \
              AUTHORS \
              ChangeLog \
              guix.scm \
-             .gitignore \
              hall.scm \
-             build-aux/texinfo.tex \
-             build-aux/missing \
-             build-aux/install-sh \
-             build-aux/test-driver.scm \
              configure.ac \
              Makefile.am \
              pre-inst-env.in \
+             build-aux/test-driver.scm \
              $(TESTS)
 
 ACLOCAL_AMFLAGS = -I m4

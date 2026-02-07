@@ -25,7 +25,7 @@ scripts/gubar
 /build-aux/install-sh
 /build-aux/mdate-sh
 /build-aux/missing
-/build-aux/test-driver
+/build-aux/test-driver.scm
 /build-aux/texinfo.tex
 /config.status
 /configure
