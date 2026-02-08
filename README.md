@@ -67,7 +67,7 @@ The effects of the keys are as follows:
 | interval | Time in seconds in which this block updates | seconds or `'persistent` |
 | procedure | The main procedure that will be run after `interval`. Receives a `<block>` and returns a `<block>` record. | `(lambda (block) block)`|
 | click-handler | The procedure that is run when this block is clicked. The block must have its name field set. | `(lambda (event block) (block))`|
-| signal | SIGRTIMIN offset that this block will be listening on and refresh on. Can be triggered by sending a SIGRTMIN+signal to the guile process running gubar -- `pkill -SIGRTMIN+signal -f -n gubar.scm`  | `2` |
+| signal | SIGRTIMIN offset that this block will be listening on and refresh on. Can be triggered by sending a SIGRTMIN+signal to the guile process running gubar -- `pkill -SIGRTMIN+signal gubar`  | `2` |
 
 #### Examples
 
@@ -135,16 +135,16 @@ For the modules that require signals:
 ```
 # Volume control
 bindsym --locked  XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle
-bindsym --release XF86AudioMute exec pkill -SIGRTMIN+2 -f -n gubar.scm
+bindsym --release XF86AudioMute exec pkill -SIGRTMIN+2 gubar
 bindsym --locked  XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%
-bindsym --release XF86AudioLowerVolume exec pkill -SIGRTMIN+2 -f -n gubar.scm
+bindsym --release XF86AudioLowerVolume exec pkill -SIGRTMIN+2 gubar
 bindsym --locked  XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%
-bindsym --release XF86AudioRaiseVolume exec pkill -SIGRTMIN+2 -f -n gubar.scm
+bindsym --release XF86AudioRaiseVolume exec pkill -SIGRTMIN+2 gubar
 
 # Switch layout
 bindsym --release $mod+Control_R exec swaymsg input type:keyboard \
                                       xkb_switch_layout next && \
-                                      pkill -SIGRTMIN+3 -f -n gubar.scm
+                                      pkill -SIGRTMIN+3 gubar
 ```
 
 Bar declaration:
@@ -152,9 +152,8 @@ Bar declaration:
 ```
 bar {
     ...
-    status_command "guix shell guile -f /path/to/gubar/guix.scm -- /path/to/gubar/src/gubar.scm"
+    status_command gubar
     ...
-}
 ```
 
 ## Contributing

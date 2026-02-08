@@ -1,7 +1,7 @@
 (hall-description
   (name "gubar")
   (prefix "")
-  (version "0.1")
+  (version "0.1.0")
   (author "Trevor Arjeski")
   (email "tmarjeski@gmail.com")
   (copyright (2025))
