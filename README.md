@@ -13,18 +13,28 @@ autoreconf -vif && ./configure
 
 ## Installing
 
-### Dependencies
-- Guile 3
-- [guile-fibers](https://github.com/wingo/fibers/)
-- [guile-json](https://github.com/aconchillo/guile-json)
-
 ### Guix
 
-This will install gubar and put it in your profile PATH:
+Gubar is available in the main Guix channel.
+
+```sh
+guix package -i gubar
+```
+
+### With manifest
+
+The repository includes the package manifest for manual installation with Guix,
+useful for hacking on gubar.
+
 ```sh
 cd gubar/
 guix package -f guix.scm
 ```
+
+### Dependencies
+- Guile 3
+- [guile-fibers](https://github.com/wingo/fibers/)
+- [guile-json](https://github.com/aconchillo/guile-json)
 
 ## Integrating with swaybar
 Once gubar is installed, add the following to your Sway config:
