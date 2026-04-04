@@ -23,7 +23,7 @@
 (define icons '(󰕿 󰖀 󰕾))
 
 (define (volume->icon volume)
-  (list-ref icons (truncate-quotient volume 34)))
+  (list-ref icons (min (truncate-quotient volume 34) (- (length icons) 1))))
 
 (define (get-default-sink)
   (let* ((sinks-pipe (open-input-pipe "pactl -f json list sinks"))
