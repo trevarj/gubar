@@ -16,7 +16,7 @@
   #:export (main))
 
 (define simple-config
-  (list (date-time #:interval 1)))
+  (list (date-time)))
 
 (define (load-config)
   (let ((config-file (string-append (getenv "HOME") "/.config/gubar/config.scm")))

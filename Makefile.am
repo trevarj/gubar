@@ -27,6 +27,7 @@ SUFFIXES = .scm .go
 SOURCES = gubar/blocks/xkb-layout.scm \
           gubar/blocks/volume-pipewire.scm \
           gubar/blocks/network-manager-wifi.scm \
+          gubar/blocks/network-manager.scm \
           gubar/blocks/label.scm \
           gubar/blocks/date-time.scm \
           gubar/blocks/battery.scm \

@@ -30,6 +30,9 @@
 (define* (network-manager-wifi
           #:key
           (ssid #f))
+  "Deprecated: use (network-manager) from (gubar blocks network-manager) instead.
+network-manager-wifi only detects wifi connections. network-manager adds
+ethernet support and event-driven updates via nmcli monitor."
   (gublock
    #:interval 10
    #:procedure

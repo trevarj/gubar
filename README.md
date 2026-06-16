@@ -57,8 +57,8 @@ want them displayed, from left to right. You may use the bundled blocks in
 ### `gublock`
 A `gublock` is the fundamental building block of `Gubar`.
 
-| :warning: **Subject to Change** |
-|---------------------------------|
+| :warning: **Subject to Change**                                 |
+|-----------------------------------------------------------------|
 | The `gublock` interface is unstable and may change at any point |
 
 ```scheme
@@ -67,22 +67,26 @@ A `gublock` is the fundamental building block of `Gubar`.
     #:interval [interval]
     #:procedure [procedure]
     #:click-handler [click-handler]
-    #:signal [signal])
+    #:signal [signal]
+    #:event-source [event-source])
 ```
 The effects of the keys are as follows:
 
-| Key | Description | Example 
-|-----|-------------|--------
-| block | Initial block represented as an assoc list. | `'(("full_text" . "foo"))` |
-| interval | Time in seconds in which this block updates | seconds or `'persistent` |
-| procedure | The main procedure that will be run after `interval`. Receives a `<block>` and returns a `<block>` record. | `(lambda (block) block)`|
-| click-handler | The procedure that is run when this block is clicked. The block must have its name field set. | `(lambda (event block) (block))`|
-| signal | SIGRTIMIN offset that this block will be listening on and refresh on. Can be triggered by sending a SIGRTMIN+signal to the guile process running gubar -- `pkill -SIGRTMIN+signal gubar`  | `2` |
+| Key           | Description                                                                                                | Example                                         |
+|---------------|------------------------------------------------------------------------------------------------------------|-------------------------------------------------|
+| block         | Initial block represented as an assoc list.                                                                | `'(("full_text" . "foo"))`                      |
+| interval      | Time in seconds in which this block updates or 'persistent for event-driven blocks                         | seconds or `'persistent`                        |
+| procedure     | The main procedure that will be run after `interval`. Receives a `<block>` and returns a `<block>` record. | `(lambda (block) block)`                        |
+| click-handler | The procedure that is run when this block is clicked. The block must have its name field set.              | `(lambda (event block) (block))`                |
+| signal        | SIGRTMIN offset to listen on. Trigger with `pkill -SIGRTMIN+signal gubar`.                                 | `2`                                             |
+| event-source  | A thunk returning an input port to monitor events.                                                         | `(lambda () (open-input-pipe "nmcli monitor"))` |
+
+
 
 #### Examples
 
 All keys are optional, so the most basic block with no text at all is
-`(gublock)`. Here's a block that the number of seconds it has been active:
+`(gublock)`. Here's a block that displays the number of seconds it has been active:
 
 ```scheme
 (gublock
@@ -109,34 +113,38 @@ And here's a block that shows a random number every time you click it:
 
 ### Built-in Blocks
 
-| Block                | Declaration                                         | Info                                                                                                                     |
-|----------------------|-----------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------|
-| battery              | `(battery #:key (format "~a ~a%") (nerd-icons #f))` | Uses `/sys/class/power_supply/AC/online` and `/sys/class/power_supply/BAT0/capacity`                                     |
-| date-time            | `(date-time #:key (format "%c") (interval 1))`      | Defaults: format `%c`, info `1`                                                                                          |
-| label                | `(label text #:key color)`                          | Color should be an RGB string "#RRGGBB"                                                                                  |
-| network-manager-wifi | `(network-manager-wifi #:key (ssid #f))`            | Uses `nmcli -t -f SSID,IN-USE,SIGNAL device wifi list --rescan auto` to gather info                                      |
-| volume               | `(volume-pipewire #:key (signal 2))`                | Uses `pactl -f json list sinks` and `pactl get-default-sink` to gather info                                              |
-| xkb-layout           | `(xkb-layout #:key (signal 3) (alias-pairs '()))`   | Uses `swaymsg -rt get_inputs` to gather info. `alias-pairs` are for mapping the layout index to an alias to be displayed |
+| Block                | Declaration                                                       | Info                                                                                 |
+|----------------------|-------------------------------------------------------------------|--------------------------------------------------------------------------------------|
+| battery              | `(battery #:key (format "~a ~a%") (nerd-icons #f))`               | Reads `/sys/class/power_supply/AC/online` and `BAT0/capacity`                        |
+| date-time            | `(date-time #:key (format "%c") (interval 1))`                    | Pass `'persistent` for event-driven per-second updates                               |
+| label                | `(label text #:key color)`                                        | `color` is an RGB string `"#RRGGBB"`                                                 |
+| network-manager-wifi | `(network-manager-wifi #:key (ssid #f))`                          | Deprecated — use `network-manager`                                                   |
+| network-manager      | `(network-manager #:key (ssid #f))`                               | Detects ethernet and wifi via `nmcli monitor`                                        |
+| volume               | `(volume-pipewire #:key (signal 2))`                              | Uses `pactl -f json list sinks` and `pactl get-default-sink`                         |
+| brightness           | `(brightness #:key (format "~a ~a%") (nerd-icons #f) (signal 4))` | Uses `brightnessctl`. Triggered via `SIGRTMIN+4`                                     |
+| xkb-layout           | `(xkb-layout #:key (signal 3) (alias-pairs '()))`                 | Uses `swaymsg -rt get_inputs`. `alias-pairs` maps layout index to display alias      |
 
 ### Example Config
 
 ```scheme
 (use-modules (gubar gublock)
-             (gubar blocks date-time)
-             (gubar blocks battery)
+             (gubar swaybar-protocol)
              (gubar blocks label)
-             (gubar blocks volume-pipewire)
-             (gubar blocks network-manager-wifi)
              (gubar blocks xkb-layout)
-             (gubar swaybar-protocol))
+             (gubar blocks network-manager)
+             (gubar blocks brightness)
+             (gubar blocks volume-pipewire)
+             (gubar blocks battery)
+             (gubar blocks date-time))
 
 (list
- (date-time #:interval 60 #:format "%a %b %d %Y %-I:%M %p")
- (network-manager-wifi)
- (volume-pipewire)
+ (label "some text")
  (xkb-layout #:alias-pairs '((0 . "lang1") (1 . "lang2")))
+ (network-manager #:ssid #t)
+ (brightness #:nerd-icons #t)
+ (volume-pipewire)
  (battery #:nerd-icons #t)
- (label "some text"))
+ (date-time #:format "%a %b %d %Y %-I:%M %p" #:interval 'persistent))
 ```
  
 #### Corresponding swayconfig
@@ -150,6 +158,12 @@ bindsym --locked  XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@
 bindsym --release XF86AudioLowerVolume exec pkill -SIGRTMIN+2 gubar
 bindsym --locked  XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%
 bindsym --release XF86AudioRaiseVolume exec pkill -SIGRTMIN+2 gubar
+
+# Brightness control
+bindsym --locked  XF86MonBrightnessDown exec brightnessctl set 5%-
+bindsym --release XF86MonBrightnessDown exec pkill -SIGRTMIN+4 gubar
+bindsym --locked  XF86MonBrightnessUp   exec brightnessctl set 5%+
+bindsym --release XF86MonBrightnessUp   exec pkill -SIGRTMIN+4 gubar
 
 # Switch layout
 bindsym --release $mod+Control_R exec swaymsg input type:keyboard \

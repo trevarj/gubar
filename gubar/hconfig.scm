@@ -1,17 +1,17 @@
 (define-module
-  (gubar hconfig)
-  #:use-module
-  (srfi srfi-26)
-  #:export
-  (%version
-    %author
-    %license
-    %copyright
-    %gettext-domain
-    G_
-    N_
-    init-nls
-    init-locale))
+ (gubar hconfig)
+ #:use-module
+ (srfi srfi-26)
+ #:export
+ (%version
+  %author
+  %license
+  %copyright
+  %gettext-domain
+  G_
+  N_
+  init-nls
+  init-locale))
 
 (define %version "0.1.0")
 
@@ -29,7 +29,5 @@
 
 (define (init-nls) "Dummy as no NLS is used" #t)
 
-(define (init-locale)
-  "Dummy as no NLS is used"
-  #t)
+(define (init-locale) "Dummy as no NLS is used" #t)
 
