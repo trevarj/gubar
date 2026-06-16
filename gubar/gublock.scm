@@ -5,6 +5,7 @@
   #:use-module ((fibers timers) #:select ((sleep . fsleep)))
   #:use-module (gubar swaybar-protocol)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 textual-ports)
   #:use-module (srfi srfi-9)
   #:export (<gublock>
             make-gublock
@@ -16,10 +17,12 @@
             set-gublock-block!
             set-gublock-procedure!
             gublock-run
-            gublock-handle-click))
+            gublock-update
+            gublock-handle-click
+            gublock-event-source))
 
 (define-record-type <gublock>
-  (make-gublock block interval procedure click-handler signal)
+  (make-gublock block interval procedure click-handler signal event-source)
   gublock?
   ;; Swaybar-protocol "body" object
   (block gublock-block set-gublock-block!)
@@ -30,18 +33,22 @@
   ;; A lambda that takes (click-event, block) and returns a new block
   (click-handler gublock-click-handler)
   ;; The number of SIGRTMIN+N to register on and perform an update upon
-  (signal gublock-signal))
+  (signal gublock-signal)
+  ;; A thunk returning an input port to monitor for events, when set
+  ;; a fiber reads lines from the port and triggers updates on each event
+  (event-source gublock-event-source))
 
 (define* (gublock #:key
                   (block '())
                   (interval 'persistent)
                   (procedure (lambda (block) block))
                   (click-handler #f)
-                  (signal #f))
+                  (signal #f)
+                  (event-source #f))
   "Helper to define a custom gublock. The initial block can be defined using an
 assoc list."
   (make-gublock
-   (scm->block block) interval procedure click-handler signal))
+   (scm->block block) interval procedure click-handler signal event-source))
 
 (define (do-procedure gublock update-chan)
   (let ((procedure (gublock-procedure gublock))
@@ -49,6 +56,10 @@ assoc list."
     (when (procedure? procedure)
       (set-gublock-block! gublock (procedure block))
       (put-message update-chan #t))))
+
+(define (gublock-update gublock update-chan)
+  "Trigger a procedure update for GUBLOCK, putting a message on UPDATE-CHAN."
+  (do-procedure gublock update-chan))
 
 (define (gublock-handle-click gublock event update-chan)
   (let ((handler (gublock-click-handler gublock))

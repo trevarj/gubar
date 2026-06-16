@@ -72,6 +72,24 @@ the <click-event> and finds the correct gublock to handle the event."
             (gublock-handle-click gu event update-chan))))
       (loop))))
 
+(define (event-source-listener gublocks update-chan)
+  "Spawns a fiber for each gublock that has an event-source. Each fiber
+reads lines from the event source port and triggers a block update on
+each event received."
+  (for-each
+   (lambda (gb)
+     (let ((event-source (gublock-event-source gb)))
+       (when event-source
+         (spawn-fiber
+          (lambda ()
+            (let ((input (event-source)))
+              (let loop ((line (get-line input)))
+                (unless (eof-object? line)
+                  (gublock-update gb update-chan)
+                  (loop (get-line input))))))
+          #:parallel? #t))))
+   gublocks))
+
 (define (run-gubar)
   (let ((update-chan (make-channel))
         (gublocks (load-config)))
@@ -93,6 +111,11 @@ the <click-event> and finds the correct gublock to handle the event."
     ;; Fiber for click handling
     (spawn-fiber
      (lambda () (click-listener gublocks update-chan))
+     #:parallel? #t)
+
+    ;; Fiber for event-driven handling
+    (spawn-fiber
+     (lambda () (event-source-listener gublocks update-chan))
      #:parallel? #t)
 
     ;; Start listening for updates from gublocks
