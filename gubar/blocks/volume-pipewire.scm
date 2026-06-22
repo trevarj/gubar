@@ -25,9 +25,11 @@
 (define (volume->icon volume)
   (list-ref icons (min (truncate-quotient volume 34) (- (length icons) 1))))
 
-(define (get-default-sink)
-  (let* ((sinks-pipe (open-input-pipe "pactl -f json list sinks"))
-         (default-sink-pipe (open-input-pipe "pactl get-default-sink"))
+(define (get-default-sink pactl-command)
+  (let* ((sinks-pipe (open-input-pipe (string-append pactl-command
+                                                     " -f json list sinks")))
+         (default-sink-pipe (open-input-pipe (string-append pactl-command
+                                                            " get-default-sink")))
          (sinks (json->scm sinks-pipe))
          (default-sink (get-line default-sink-pipe)))
     (close-pipe sinks-pipe)
@@ -46,7 +48,7 @@
                       (string->number volume)))))
       (format #f "~a ~a" icon volume))))
 
-(define* (volume-pipewire #:key (signal 2) (interval #f))
+(define* (volume-pipewire #:key (signal 2) (interval #f) (pactl-command "pactl"))
   (gublock
    #:interval (or interval 'persistent)
    #:signal signal
@@ -54,5 +56,5 @@
    (lambda (block)
      (set-block-full-text!
       block
-      (display-sink (get-default-sink)))
+      (display-sink (get-default-sink pactl-command)))
      block)))
