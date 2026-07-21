@@ -24,7 +24,6 @@
                  "blocks"
                  ((scheme-file "xkb-layout")
                   (scheme-file "volume-pipewire")
-                  (scheme-file "network-manager-wifi") ;; deprecated
                   (scheme-file "network-manager")
                   (scheme-file "label")
                   (scheme-file "date-time")
