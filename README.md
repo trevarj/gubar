@@ -118,7 +118,6 @@ And here's a block that shows a random number every time you click it:
 | battery              | `(battery #:key (format "~a ~a%") (nerd-icons #f))`               | Reads `/sys/class/power_supply/AC/online` and `BAT0/capacity`                        |
 | date-time            | `(date-time #:key (format "%c") (interval 1))`                    | Pass `'persistent` for event-driven per-second updates                               |
 | label                | `(label text #:key color)`                                        | `color` is an RGB string `"#RRGGBB"`                                                 |
-| network-manager-wifi | `(network-manager-wifi #:key (ssid #f))`                          | Deprecated — use `network-manager`                                                   |
 | network-manager      | `(network-manager #:key (ssid #f))`                               | Detects ethernet and wifi via `nmcli monitor`                                        |
 | volume               | `(volume-pipewire #:key (signal 2))`                              | Uses `pactl -f json list sinks` and `pactl get-default-sink`                         |
 | brightness           | `(brightness #:key (format "~a ~a%") (nerd-icons #f) (signal 4))` | Uses `brightnessctl`. Triggered via `SIGRTMIN+4`                                     |
