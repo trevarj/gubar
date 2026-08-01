@@ -37,6 +37,7 @@ guix package -f guix.scm
 - [guile-json](https://github.com/aconchillo/guile-json)
 
 ## Integrating with swaybar
+
 Once gubar is installed, add the following to your Sway config:
 ```
 bar {
@@ -46,6 +47,7 @@ bar {
 ```
 
 ## Configuration
+
 Gubar will look for a config file in `~/.config/gubar/config.scm` before falling
 back to the default config, which is just the system time.
 
@@ -81,8 +83,6 @@ The effects of the keys are as follows:
 | signal        | SIGRTMIN offset to listen on. Trigger with `pkill -SIGRTMIN+signal gubar`.                                 | `2`                                             |
 | event-source  | A thunk returning an input port to monitor events.                                                         | `(lambda () (open-input-pipe "nmcli monitor"))` |
 
-
-
 #### Examples
 
 All keys are optional, so the most basic block with no text at all is
@@ -110,6 +110,8 @@ And here's a block that shows a random number every time you click it:
    (set-block-full-text! block (number->string (random 1000000)))
    block))
 ```
+
+More examples are available as built-in blocks.
 
 ### Built-in Blocks
 
@@ -147,6 +149,7 @@ And here's a block that shows a random number every time you click it:
 ```
  
 #### Corresponding swayconfig
+
 For the modules that require signals:
  
 ```
@@ -193,6 +196,7 @@ hall build -xf
 ```
 
 ## TODO
+
 - [ ] Make configuration more ergonomic with some kind of syntax for defining
       blocks, instead of having to use assoc lists.
 - [ ] Try to use channels to send click updates to a block instead of finding
