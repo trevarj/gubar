@@ -11,4 +11,10 @@ Copyright © (2025) Trevor Arjeski <tmarjeski@gmail.com>
 
 Please send Gubar bug reports to tmarjeski@gmail.com.
 
+* Release 0.2.0
+
+gublocks now support updates via an event source spawned on a separate fiber.
+`network-manager-wifi` built-in block has been deprecated in favour of
+a new, event-driven `network-manager`.
+
 * First release 0.1.0
