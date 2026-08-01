@@ -1,7 +1,7 @@
 dnl -*- Autoconf -*-
 
-AC_INIT(gubar, 0.1.0)
-AC_SUBST(HVERSION, "\"0.1.0\"")
+AC_INIT(gubar, 0.2.0)
+AC_SUBST(HVERSION, "\"0.2.0\"")
 AC_SUBST(AUTHOR, "\"Trevor Arjeski\"")
 AC_SUBST(COPYRIGHT, "'(2025)")
 AC_SUBST(LICENSE, gpl3+)
